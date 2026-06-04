@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Padrinos - Seguimiento de Planes de Trabajo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  .tab-active { background: #dbeafe; color: #1e40af; }
+  .estado-completada { background: #d1fae5; color: #065f46; }
+  .estado-ejecucion { background: #dbeafe; color: #1e40af; }
+  .estado-vencida { background: #fee2e2; color: #991b1b; }
+  .estado-pendiente { background: #fef3c7; color: #92400e; }
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- DATOS EMBEBIDOS -->
+<script>
+const ACTIVIDADES = [
+{"id":"act-1","padrino":"Daniel Cruz","area":"Tecnología","iniciativa":"Modernización TI","actividad":"Migrar base de datos","fechaCompromiso":"2025-03-15","estado":"Completada","porcentajeAvance":100,"retos":"","observaciones":"Sin novedad","avanceUltimoPeriodo":"Se completó migración exitosamente"},
+{"id":"act-2","padrino":"Daniel Cruz","area":"Tecnología","iniciativa":"Modernización TI","actividad":"Implementar backup automático","fechaCompromiso":"2025-04-20","estado":"Completada","porcentajeAvance":100,"retos":"","observaciones":"Funcionando correctamente","avanceUltimoPeriodo":"Configurados backups diarios"},
+{"id":"act-3","padrino":"Daniel Cruz","area":"Operaciones","iniciativa":"Excelencia Operacional","actividad":"Capacitación equipo","fechaCompromiso":"2025-04-20","estado":"En ejecución","porcentajeAvance":60,"retos":"Falta disponibilidad del equipo","observaciones":"Reprogramada una sesión","avanceUltimoPeriodo":"Se completaron 3 de 5 sesiones"},
+{"id":"act-4","padrino":"Daniel Cruz","area":"Operaciones","iniciativa":"Excelencia Operacional","actividad":"Rediseño proceso logístico","fechaCompromiso":"2025-05-15","estado":"En ejecución","porcentajeAvance":45,"retos":"Dependencia de proveedor externo","observaciones":"En espera de cotización","avanceUltimoPeriodo":"Levantamiento de procesos completado"},
+{"id":"act-5","padrino":"David Tapiero","area":"Finanzas","iniciativa":"Transparencia Financiera","actividad":"Auditoría Q1","fechaCompromiso":"2025-02-28","estado":"Vencida","porcentajeAvance":40,"retos":"Documentos pendientes de área legal","observaciones":"Escalado a dirección","avanceUltimoPeriodo":"Sin avance por bloqueo legal"},
+{"id":"act-6","padrino":"David Tapiero","area":"Finanzas","iniciativa":"Transparencia Financiera","actividad":"Reporte consolidado anual","fechaCompromiso":"2025-03-31","estado":"Completada","porcentajeAvance":100,"retos":"","observaciones":"Entregado a tiempo","avanceUltimoPeriodo":"Reporte entregado y aprobado"},
+{"id":"act-7","padrino":"Julio Cesar Torres","area":"Tecnología","iniciativa":"Transformación Digital","actividad":"Implementar CRM","fechaCompromiso":"2025-06-01","estado":"Pendiente","porcentajeAvance":10,"retos":"","observaciones":"Por iniciar en mayo","avanceUltimoPeriodo":"Proveedor seleccionado"},
+{"id":"act-8","padrino":"Julio Cesar Torres","area":"Tecnología","iniciativa":"Transformación Digital","actividad":"Actualizar servidores","fechaCompromiso":"2025-05-30","estado":"En ejecución","porcentajeAvance":70,"retos":"","observaciones":"En progreso","avanceUltimoPeriodo":"5 de 8 servidores actualizados"},
+{"id":"act-9","padrino":"Alexander Ramirez","area":"Comercial","iniciativa":"Expansión Comercial","actividad":"Plan de expansión zona norte","fechaCompromiso":"2025-04-15","estado":"Vencida","porcentajeAvance":30,"retos":"Presupuesto no aprobado","observaciones":"Requiere nueva presentación a directiva","avanceUltimoPeriodo":"Estudio de mercado finalizado"},
+{"id":"act-10","padrino":"Alexander Ramirez","area":"Comercial","iniciativa":"Expansión Comercial","actividad":"Capacitación fuerza de ventas","fechaCompromiso":"2025-05-20","estado":"En ejecución","porcentajeAvance":55,"retos":"Rotación de personal","observaciones":"Se reprogramaron 2 sesiones","avanceUltimoPeriodo":"4 de 7 módulos completados"},
+{"id":"act-11","padrino":"Alexander Ramirez","area":"Recursos Humanos","iniciativa":"Cultura Organizacional","actividad":"Evaluación de desempeño","fechaCompromiso":"2025-03-30","estado":"Completada","porcentajeAvance":100,"retos":"","observaciones":"Finalizada exitosamente","avanceUltimoPeriodo":"Resultados comunicados a toda la organización"},
+{"id":"act-12","padrino":"Alexander Ramirez","area":"Recursos Humanos","iniciativa":"Cultura Organizacional","actividad":"Plan de bienestar 2025","fechaCompromiso":"2025-04-30","estado":"En ejecución","porcentajeAvance":80,"retos":"","observaciones":"Próximo a finalizar","avanceUltimoPeriodo":"Programa de actividades lanzado"},
+{"id":"act-13","padrino":"Juan Miguel Torres","area":"Operaciones","iniciativa":"Eficiencia Logística","actividad":"Optimización rutas de entrega","fechaCompromiso":"2025-05-10","estado":"Pendiente","porcentajeAvance":5,"retos":"Falta información de costos actuales","observaciones":"Reunión pendiente con logística","avanceUltimoPeriodo":"Solicitud enviada a contabilidad"},
+{"id":"act-14","padrino":"Juan Miguel Torres","area":"Operaciones","iniciativa":"Eficiencia Logística","actividad":"Inventario general","fechaCompromiso":"2025-03-15","estado":"Completada","porcentajeAvance":100,"retos":"","observaciones":"Completado sin observaciones","avanceUltimoPeriodo":"Inventario cerrado con 99.2% exactitud"},
+{"id":"act-15","padrino":"Andres Angulo","area":"Comercial","iniciativa":"Modificaciones Nominativas","actividad":"6 RPA modificaciones (Vida, salud, autos) - Pdte PAP","fechaCompromiso":"2026-06-03","estado":"Pendiente","porcentajeAvance":85,"retos":"Problemas con pasos a producción","observaciones":"","avanceUltimoPeriodo":"Pendiente Paso a producción"},
+{"id":"act-16","padrino":"Andres Angulo","area":"Comercial","iniciativa":"Modificaciones Nominativas","actividad":"RPA modificaciones (Generales)","fechaCompromiso":"2026-06-30","estado":"Pendiente","porcentajeAvance":70,"retos":"","observaciones":"","avanceUltimoPeriodo":"En desarrollo"},
+{"id":"act-17","padrino":"Juan Sebastian Duran","area":"Comercial","iniciativa":"Unificación de buzones","actividad":"Visualización completa de hilos de correo.","fechaCompromiso":"2026-05-31","estado":"Vencida","porcentajeAvance":80,"retos":"","observaciones":"","avanceUltimoPeriodo":"Avance"},
+{"id":"act-18","padrino":"Guillermo Tellez","area":"Comercial","iniciativa":"Colectivas","actividad":"Integración Hecopot","fechaCompromiso":"2026-06-03","estado":"Pendiente","porcentajeAvance":0,"retos":"","observaciones":"","avanceUltimoPeriodo":""}
+];
+</script>
+
+<!-- HEADER -->
+<header class="bg-blue-900 text-white shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 py-5">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">📊</span>
+      <div>
+        <h1 class="text-xl font-bold">Dashboard de Seguimiento</h1>
+        <p class="text-blue-200 text-sm">Planes de Trabajo de Padrinos</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav class="bg-white border-b shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 flex gap-4 h-12 items-center">
+    <button onclick="showPage('dashboard')" id="nav-dashboard" class="px-4 py-2 text-sm font-medium rounded-md tab-active">📊 Dashboard</button>
+    <button onclick="showPage('mapa')" id="nav-mapa" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100">🗺️ Mapa de Padrinos</button>
+    <button onclick="showPage('detalle')" id="nav-detalle" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100">📋 Detalle por Iniciativa</button>
+  </div>
+</nav>
+
+<!-- FILTROS -->
+<div class="max-w-7xl mx-auto px-4 pt-4">
+  <div class="flex flex-wrap items-center gap-3" id="filtros-bar">
+    <span class="text-sm font-medium text-gray-600">Filtros:</span>
+    <select id="filtro-padrino" onchange="applyFilters()" class="border rounded-lg px-3 py-2 text-sm">
+      <option value="">Todos los Padrinos</option>
+    </select>
+    <select id="filtro-area" onchange="applyFilters()" class="border rounded-lg px-3 py-2 text-sm">
+      <option value="">Todas las Áreas</option>
+    </select>
+    <select id="filtro-iniciativa" onchange="applyFilters()" class="border rounded-lg px-3 py-2 text-sm">
+      <option value="">Todas las Iniciativas</option>
+    </select>
+    <select id="filtro-estado" onchange="applyFilters()" class="border rounded-lg px-3 py-2 text-sm">
+      <option value="">Todos los Estados</option>
+      <option>Completada</option><option>En ejecución</option><option>Vencida</option><option>Pendiente</option>
+    </select>
+    <button onclick="clearFilters()" class="px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">✕ Limpiar</button>
+  </div>
+</div>
+
+<!-- PAGE: DASHBOARD -->
+<div id="page-dashboard" class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+  <!-- KPIs -->
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="kpis"></div>
+  <!-- Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl border p-6 shadow-sm">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Cumplimiento por Iniciativa</h3>
+      <canvas id="chart-iniciativa"></canvas>
+    </div>
+    <div class="bg-white rounded-xl border p-6 shadow-sm">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Actividades por Estado</h3>
+      <canvas id="chart-estado"></canvas>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl border p-6 shadow-sm">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Cumplimiento por Padrino</h3>
+      <canvas id="chart-padrino"></canvas>
+    </div>
+    <div class="bg-white rounded-xl border p-6 shadow-sm">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Cumplimiento por Área</h3>
+      <canvas id="chart-area"></canvas>
+    </div>
+  </div>
+  <!-- Retos -->
+  <div class="bg-white rounded-xl border p-6 shadow-sm">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Retos Reportados <span id="retos-count" class="bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-0.5 rounded-full"></span></h3>
+    <div id="retos-table"></div>
+  </div>
+</div>
+
+<!-- PAGE: MAPA -->
+<div id="page-mapa" class="max-w-7xl mx-auto px-4 py-6 hidden">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Padrinos de proyectos / Iniciativas</h2>
+  <div id="mapa-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+</div>
+
+<!-- PAGE: DETALLE -->
+<div id="page-detalle" class="max-w-7xl mx-auto px-4 py-6 hidden">
+  <h2 class="text-lg font-semibold text-gray-800 mb-4">Detalle por Iniciativa</h2>
+  <div id="detalle-content" class="space-y-4"></div>
+</div>
+
+<script>
+// State
+let filtered = [...ACTIVIDADES];
+let charts = {};
+
+// Init
+function init() {
+  populateFilters();
+  applyFilters();
+}
+
+function populateFilters() {
+  const padrinos = [...new Set(ACTIVIDADES.map(a => a.padrino))].sort();
+  const areas = [...new Set(ACTIVIDADES.map(a => a.area))].sort();
+  const iniciativas = [...new Set(ACTIVIDADES.map(a => a.iniciativa).filter(Boolean))].sort();
+
+  const fp = document.getElementById('filtro-padrino');
+  padrinos.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; fp.appendChild(o); });
+
+  const fa = document.getElementById('filtro-area');
+  areas.forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; fa.appendChild(o); });
+
+  const fi = document.getElementById('filtro-iniciativa');
+  iniciativas.forEach(i => { const o = document.createElement('option'); o.value = i; o.textContent = i; fi.appendChild(o); });
+}
+
+function applyFilters() {
+  const fp = document.getElementById('filtro-padrino').value;
+  const fa = document.getElementById('filtro-area').value;
+  const fi = document.getElementById('filtro-iniciativa').value;
+  const fe = document.getElementById('filtro-estado').value;
+
+  filtered = ACTIVIDADES.filter(a => {
+    if (fp && a.padrino !== fp) return false;
+    if (fa && a.area !== fa) return false;
+    if (fi && a.iniciativa !== fi) return false;
+    if (fe && a.estado !== fe) return false;
+    return true;
+  });
+
+  renderKPIs();
+  renderCharts();
+  renderRetos();
+  renderMapa();
+  renderDetalle();
+}
+
+function clearFilters() {
+  document.getElementById('filtro-padrino').value = '';
+  document.getElementById('filtro-area').value = '';
+  document.getElementById('filtro-iniciativa').value = '';
+  document.getElementById('filtro-estado').value = '';
+  applyFilters();
+}
+
+// KPIs
+function renderKPIs() {
+  const total = filtered.length;
+  const completadas = filtered.filter(a => a.estado === 'Completada').length;
+  const ejecucion = filtered.filter(a => a.estado === 'En ejecución').length;
+  const vencidas = filtered.filter(a => a.estado === 'Vencida').length;
+  const pct = total > 0 ? ((completadas / total) * 100).toFixed(1) : '0.0';
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="bg-white border rounded-xl p-4 text-center"><span class="text-2xl">📋</span><div class="text-2xl font-bold text-gray-800">${total}</div><div class="text-xs text-gray-500">Total</div></div>
+    <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center"><span class="text-2xl">✅</span><div class="text-2xl font-bold text-green-800">${completadas}</div><div class="text-xs text-green-600">Completadas</div></div>
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center"><span class="text-2xl">🔄</span><div class="text-2xl font-bold text-blue-800">${ejecucion}</div><div class="text-xs text-blue-600">En Ejecución</div></div>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-center"><span class="text-2xl">🚨</span><div class="text-2xl font-bold text-red-800">${vencidas}</div><div class="text-xs text-red-600">Vencidas</div></div>
+    <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center"><span class="text-2xl">📊</span><div class="text-2xl font-bold text-purple-800">${pct}%</div><div class="text-xs text-purple-600">Cumplimiento</div></div>
+  `;
+}
+
+// Charts
+function renderCharts() {
+  renderChartIniciativa();
+  renderChartEstado();
+  renderChartPadrino();
+  renderChartArea();
+}
+
+function renderChartIniciativa() {
+  const groups = {};
+  filtered.forEach(a => {
+    const k = a.iniciativa || 'Sin iniciativa';
+    if (!groups[k]) groups[k] = { total: 0, completadas: 0 };
+    groups[k].total++;
+    if (a.estado === 'Completada') groups[k].completadas++;
+  });
+  const labels = Object.keys(groups).sort();
+  const data = labels.map(l => groups[l].total > 0 ? Math.round((groups[l].completadas / groups[l].total) * 100) : 0);
+
+  if (charts.iniciativa) charts.iniciativa.destroy();
+  charts.iniciativa = new Chart(document.getElementById('chart-iniciativa'), {
+    type: 'bar', data: { labels, datasets: [{ label: '% Cumplimiento', data, backgroundColor: '#8B5CF6' }] },
+    options: { indexAxis: 'y', scales: { x: { max: 100 } }, plugins: { legend: { display: false } } }
+  });
+}
+
+function renderChartEstado() {
+  const estados = ['Completada', 'En ejecución', 'Vencida', 'Pendiente'];
+  const colors = ['#10B981', '#3B82F6', '#EF4444', '#F59E0B'];
+  const data = estados.map(e => filtered.filter(a => a.estado === e).length);
+
+  if (charts.estado) charts.estado.destroy();
+  charts.estado = new Chart(document.getElementById('chart-estado'), {
+    type: 'doughnut', data: { labels: estados, datasets: [{ data, backgroundColor: colors }] },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+function renderChartPadrino() {
+  const groups = {};
+  filtered.forEach(a => {
+    if (!groups[a.padrino]) groups[a.padrino] = { total: 0, completadas: 0 };
+    groups[a.padrino].total++;
+    if (a.estado === 'Completada') groups[a.padrino].completadas++;
+  });
+  const labels = Object.keys(groups).sort();
+  const data = labels.map(l => groups[l].total > 0 ? Math.round((groups[l].completadas / groups[l].total) * 100) : 0);
+
+  if (charts.padrino) charts.padrino.destroy();
+  charts.padrino = new Chart(document.getElementById('chart-padrino'), {
+    type: 'bar', data: { labels, datasets: [{ label: '% Cumplimiento', data, backgroundColor: '#3B82F6' }] },
+    options: { indexAxis: 'y', scales: { x: { max: 100 } }, plugins: { legend: { display: false } } }
+  });
+}
+
+function renderChartArea() {
+  const groups = {};
+  filtered.forEach(a => {
+    if (!groups[a.area]) groups[a.area] = { total: 0, completadas: 0 };
+    groups[a.area].total++;
+    if (a.estado === 'Completada') groups[a.area].completadas++;
+  });
+  const labels = Object.keys(groups).sort();
+  const data = labels.map(l => groups[l].total > 0 ? Math.round((groups[l].completadas / groups[l].total) * 100) : 0);
+
+  if (charts.area) charts.area.destroy();
+  charts.area = new Chart(document.getElementById('chart-area'), {
+    type: 'bar', data: { labels, datasets: [{ label: '% Cumplimiento', data, backgroundColor: '#10B981' }] },
+    options: { indexAxis: 'y', scales: { x: { max: 100 } }, plugins: { legend: { display: false } } }
+  });
+}
+
+// Retos
+function renderRetos() {
+  const retos = filtered.filter(a => a.retos && a.retos.trim());
+  document.getElementById('retos-count').textContent = retos.length;
+
+  if (retos.length === 0) {
+    document.getElementById('retos-table').innerHTML = '<p class="text-gray-500 text-center py-4">No hay retos reportados</p>';
+    return;
+  }
+
+  let html = '<table class="w-full text-sm"><thead class="text-xs text-gray-600 uppercase bg-gray-50 border-b"><tr><th class="px-4 py-2">Padrino</th><th class="px-4 py-2">Iniciativa</th><th class="px-4 py-2">Actividad</th><th class="px-4 py-2">Estado</th><th class="px-4 py-2">Reto</th></tr></thead><tbody>';
+  retos.sort((a, b) => a.padrino.localeCompare(b.padrino)).forEach((a, i) => {
+    const bg = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+    const badge = getEstadoBadge(a.estado);
+    html += `<tr class="${bg}"><td class="px-4 py-2 font-medium">${a.padrino}</td><td class="px-4 py-2">${a.iniciativa}</td><td class="px-4 py-2">${a.actividad}</td><td class="px-4 py-2"><span class="text-xs px-2 py-0.5 rounded-full ${badge}">${a.estado}</span></td><td class="px-4 py-2">${a.retos}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('retos-table').innerHTML = html;
+}
+
+// Mapa de Padrinos
+function renderMapa() {
+  const padrinoMap = {};
+  filtered.forEach(a => {
+    if (!padrinoMap[a.padrino]) padrinoMap[a.padrino] = {};
+    const ini = a.iniciativa || 'General';
+    if (!padrinoMap[a.padrino][ini]) padrinoMap[a.padrino][ini] = [];
+    padrinoMap[a.padrino][ini].push(a);
+  });
+
+  const estadoIcon = { 'Completada': '✅', 'En ejecución': '🔄', 'Vencida': '🔴', 'Pendiente': '⏳' };
+  let html = '';
+
+  Object.keys(padrinoMap).sort().forEach(padrino => {
+    html += `<div class="border-2 border-green-600 rounded-lg bg-white shadow-sm flex flex-col">
+      <div class="bg-white border-b border-green-600 px-4 py-3 rounded-t-lg"><h3 class="text-center font-bold text-gray-800 text-sm">${padrino}</h3></div>
+      <div class="px-4 py-3 flex-1 space-y-3 text-xs text-gray-700">`;
+
+    Object.keys(padrinoMap[padrino]).forEach(ini => {
+      html += `<div><p class="font-bold text-gray-800 mb-1">${ini}:</p><ul class="space-y-0.5">`;
+      padrinoMap[padrino][ini].forEach(a => {
+        const fecha = new Date(a.fechaCompromiso).toLocaleDateString('es-CO', {day:'2-digit', month:'2-digit'});
+        html += `<li class="flex items-start gap-1"><span>${estadoIcon[a.estado] || ''}</span><span>${a.actividad} <span class="font-semibold text-green-700">${fecha}</span></span></li>`;
+      });
+      html += '</ul></div>';
+    });
+
+    html += '</div></div>';
+  });
+
+  document.getElementById('mapa-grid').innerHTML = html;
+}
+
+// Detalle por Iniciativa
+function renderDetalle() {
+  const groups = {};
+  filtered.forEach(a => {
+    const k = a.iniciativa || 'Sin iniciativa';
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(a);
+  });
+
+  let html = '';
+  Object.keys(groups).sort().forEach(ini => {
+    const acts = groups[ini];
+    const completadas = acts.filter(a => a.estado === 'Completada').length;
+    const pct = Math.round((completadas / acts.length) * 100);
+    const avgAvance = Math.round(acts.reduce((s, a) => s + a.porcentajeAvance, 0) / acts.length);
+    const padrinos = [...new Set(acts.map(a => a.padrino))].join(', ');
+    const pctColor = pct >= 75 ? 'text-green-700 bg-green-50 border-green-200' : pct >= 50 ? 'text-blue-700 bg-blue-50 border-blue-200' : pct >= 25 ? 'text-yellow-700 bg-yellow-50 border-yellow-200' : 'text-red-700 bg-red-50 border-red-200';
+
+    html += `<div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b flex flex-wrap items-center justify-between gap-3">
+        <div><h4 class="font-semibold text-gray-800">${ini}</h4><div class="text-xs text-gray-500 mt-1">👤 ${padrinos} · 📋 ${acts.length} actividades</div></div>
+        <div class="flex items-center gap-3">
+          <div class="text-right"><div class="text-xs text-gray-500 mb-1">Avance</div><div class="flex items-center gap-2"><div class="w-24 bg-gray-200 rounded-full h-2.5"><div class="bg-blue-600 h-2.5 rounded-full" style="width:${avgAvance}%"></div></div><span class="text-sm font-medium">${avgAvance}%</span></div></div>
+          <div class="px-3 py-1.5 rounded-lg border text-sm font-bold ${pctColor}">${pct}% cumplido</div>
+        </div>
+      </div>
+      <table class="w-full text-sm"><thead class="text-xs text-gray-500 uppercase bg-gray-50"><tr><th class="px-4 py-2">Actividad</th><th class="px-4 py-2">Padrino</th><th class="px-4 py-2">Fecha</th><th class="px-4 py-2">Estado</th><th class="px-4 py-2">Avance</th><th class="px-4 py-2">Último periodo</th></tr></thead><tbody>`;
+
+    acts.forEach((a, i) => {
+      const bg = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+      const fecha = new Date(a.fechaCompromiso).toLocaleDateString('es-CO', {year:'numeric', month:'short', day:'numeric'});
+      const badge = getEstadoBadge(a.estado);
+      html += `<tr class="${bg}"><td class="px-4 py-2 font-medium">${a.actividad}</td><td class="px-4 py-2">${a.padrino}</td><td class="px-4 py-2 whitespace-nowrap">${fecha}</td><td class="px-4 py-2"><span class="text-xs px-2 py-0.5 rounded-full ${badge}">${a.estado}</span></td><td class="px-4 py-2"><div class="flex items-center gap-1"><div class="w-14 bg-gray-200 rounded-full h-1.5"><div class="bg-blue-600 h-1.5 rounded-full" style="width:${a.porcentajeAvance}%"></div></div><span class="text-xs">${a.porcentajeAvance}%</span></div></td><td class="px-4 py-2 text-xs">${a.avanceUltimoPeriodo || '—'}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+  });
+
+  document.getElementById('detalle-content').innerHTML = html;
+}
+
+// Helpers
+function getEstadoBadge(estado) {
+  switch(estado) {
+    case 'Completada': return 'estado-completada';
+    case 'En ejecución': return 'estado-ejecucion';
+    case 'Vencida': return 'estado-vencida';
+    case 'Pendiente': return 'estado-pendiente';
+    default: return '';
+  }
+}
+
+function showPage(page) {
+  document.getElementById('page-dashboard').classList.add('hidden');
+  document.getElementById('page-mapa').classList.add('hidden');
+  document.getElementById('page-detalle').classList.add('hidden');
+  document.getElementById('page-' + page).classList.remove('hidden');
+
+  document.getElementById('nav-dashboard').className = 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100';
+  document.getElementById('nav-mapa').className = 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100';
+  document.getElementById('nav-detalle').className = 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100';
+  document.getElementById('nav-' + page).className = 'px-4 py-2 text-sm font-medium rounded-md tab-active';
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
