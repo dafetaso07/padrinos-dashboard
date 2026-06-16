@@ -1,0 +1,19 @@
+id,padrino,area,iniciativa,actividad,fechaCompromiso,estado,porcentajeAvance,retos,observaciones,avanceUltimoPeriodo
+act-1,Daniel Cruz,Tecnología,Modernización TI,Migrar base de datos,2025-03-15,Completada,100,,Sin novedad,Se completó migración exitosamente
+act-2,Daniel Cruz,Tecnología,Modernización TI,Implementar backup automático,2025-04-20,Completada,100,,Funcionando correctamente,Configurados backups diarios
+act-3,Daniel Cruz,Operaciones,Excelencia Operacional,Capacitación equipo,2025-04-20,En ejecución,60,Falta disponibilidad del equipo,Reprogramada una sesión,Se completaron 3 de 5 sesiones
+act-4,Daniel Cruz,Operaciones,Excelencia Operacional,Rediseño proceso logístico,2025-05-15,En ejecución,45,Dependencia de proveedor externo,En espera de cotización,Levantamiento de procesos completado
+act-5,David Tapiero,Finanzas,Transparencia Financiera,Auditoría Q1,2025-02-28,Vencida,40,Documentos pendientes de área legal,Escalado a dirección,Sin avance por bloqueo legal
+act-6,David Tapiero,Finanzas,Transparencia Financiera,Reporte consolidado anual,2025-03-31,Completada,100,,Entregado a tiempo,Reporte entregado y aprobado
+act-7,Julio Cesar Torres,Tecnología,Transformación Digital,Implementar CRM,2025-06-01,Pendiente,10,,Por iniciar en mayo,Proveedor seleccionado
+act-8,Julio Cesar Torres,Tecnología,Transformación Digital,Actualizar servidores,2025-05-30,En ejecución,70,,En progreso,5 de 8 servidores actualizados
+act-9,Alexander Ramirez,Comercial,Expansión Comercial,Plan de expansión zona norte,2025-04-15,Vencida,30,Presupuesto no aprobado,Requiere nueva presentación a directiva,Estudio de mercado finalizado
+act-10,Alexander Ramirez,Comercial,Expansión Comercial,Capacitación fuerza de ventas,2025-05-20,En ejecución,55,Rotación de personal,Se reprogramaron 2 sesiones,4 de 7 módulos completados
+act-11,Alexander Ramirez,Recursos Humanos,Cultura Organizacional,Evaluación de desempeño,2025-03-30,Completada,100,,Finalizada exitosamente,Resultados comunicados a toda la organización
+act-12,Alexander Ramirez,Recursos Humanos,Cultura Organizacional,Plan de bienestar 2025,2025-04-30,En ejecución,80,,Próximo a finalizar,Programa de actividades lanzado
+act-13,Juan Miguel Torres,Operaciones,Eficiencia Logística,Optimización rutas de entrega,2025-05-10,Pendiente,5,Falta información de costos actuales,Reunión pendiente con logística,Solicitud enviada a contabilidad
+act-14,Juan Miguel Torres,Operaciones,Eficiencia Logística,Inventario general,2025-03-15,Completada,100,,Completado sin observaciones,Inventario cerrado con 99.2% exactitud
+act-1780518214733-e5yng7x,Andres Angulo,Comercial,Modificaciones Nominativas,"6 RPA modificaciones (Vida, salud, autos) - Pdte PAP",2026-06-03,Pendiente,85,Problemas con pasos a producción,,Pendiente Paso a producción
+act-1780518271801-oa5ms2t,Andres Angulo,Comercial,Modificaciones Nominativas,RPA modificaciones (Generales),2026-06-30,Pendiente,70,,,En desarrollo
+act-1780518372317-nd465qs,Juan Sebastian Duran,Comercial,Unificación de buzones,Visualización completa de hilos de correo.,2026-05-31,Vencida,80,,,Avance
+act-1780518541082-v6fvh4j,Guillermo Tellez,Comercial,Colectivas,Integración Hecopot,2026-06-03,Pendiente,0,,,

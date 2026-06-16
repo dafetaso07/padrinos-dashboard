@@ -8,7 +8,10 @@ export async function fetchActividadesAPI(): Promise<Actividad[]> {
     throw new Error('No se ha configurado VITE_API_URL en el archivo .env');
   }
 
-  const response = await fetch(`${API_URL}?action=getAll`);
+  const response = await fetch(`${API_URL}?action=getAll`, {
+    credentials: 'include',
+    redirect: 'follow',
+  });
   if (!response.ok) {
     throw new Error(`Error al obtener datos: ${response.status}`);
   }
@@ -33,6 +36,8 @@ export async function saveActividadesAPI(actividades: Actividad[]): Promise<void
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(actividades),
+    credentials: 'include',
+    redirect: 'follow',
   });
 
   if (!response.ok) {
@@ -47,6 +52,8 @@ export async function addActividadAPI(actividad: Actividad): Promise<void> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(actividad),
+    credentials: 'include',
+    redirect: 'follow',
   });
 }
 
@@ -57,6 +64,8 @@ export async function updateActividadAPI(actividad: Actividad): Promise<void> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(actividad),
+    credentials: 'include',
+    redirect: 'follow',
   });
 }
 
@@ -67,5 +76,7 @@ export async function deleteActividadAPI(id: string): Promise<void> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id }),
+    credentials: 'include',
+    redirect: 'follow',
   });
 }
