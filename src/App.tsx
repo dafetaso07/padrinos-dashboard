@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Actividad, FiltrosState } from './types';
-import { fetchActividades } from './services/googleSheets';
-import { fetchActividadesAPI, saveActividadesAPI } from './services/api';
+import { fetchActividadesAPI } from './services/api';
 import { useActividades } from './hooks/useActividades';
 import { useKPIs } from './hooks/useKPIs';
 import { calcularCumplimientoPorPadrino, calcularCumplimientoPorArea, calcularCumplimientoPorIniciativa, calcularActividadesPorEstado } from './utils/calculations';
@@ -82,57 +81,9 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
-    // Verificar si hay datos en localStorage (ediciones previas del usuario)
-    const STORAGE_KEY = 'padrinos-actividades';
-    const localRaw = localStorage.getItem(STORAGE_KEY);
-    let localData: Actividad[] | null = null;
-
-    if (localRaw) {
-      try {
-        localData = JSON.parse(localRaw).map((a: Record<string, unknown>) => ({
-          ...a,
-          fechaCompromiso: new Date(a.fechaCompromiso as string),
-        })) as Actividad[];
-      } catch { /* ignorar */ }
-    }
-
     try {
-      // Intenta cargar de la API (servidor compartido)
-      const serverData = await fetchActividadesAPI();
-
-      // Si hay datos locales con más registros o diferentes, sincronizar al servidor
-      if (localData && localData.length > 0 && localData.length >= serverData.length) {
-        // Los datos locales son más recientes — subir al servidor
-        await saveActividadesAPI(localData);
-        setActividades(localData);
-        // Limpiar localStorage ya que ahora viven en el servidor
-        localStorage.removeItem(STORAGE_KEY);
-        setLoading(false);
-        return;
-      }
-
-      if (serverData.length > 0) {
-        setActividades(serverData);
-        // Limpiar localStorage viejo si existe
-        localStorage.removeItem(STORAGE_KEY);
-        setLoading(false);
-        return;
-      }
-    } catch {
-      // Si la API no está disponible
-      if (localData && localData.length > 0) {
-        setActividades(localData);
-        setLoading(false);
-        return;
-      }
-      console.warn('API no disponible, cargando CSV local...');
-    }
-
-    // Fallback: cargar del CSV
-    try {
-      const data = await fetchActividades();
+      const data = await fetchActividadesAPI();
       setActividades(data);
-      try { await saveActividadesAPI(data); } catch { /* silenciar */ }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error desconocido';
       setError(message);

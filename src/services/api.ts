@@ -1,30 +1,71 @@
 import { Actividad, Estado } from '../types';
 
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3001' : '';
+// URL del Apps Script desplegado (se configura en .env)
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export async function fetchActividadesAPI(): Promise<Actividad[]> {
-  const response = await fetch(`${API_BASE}/api/actividades`);
+  if (!API_URL) {
+    throw new Error('No se ha configurado VITE_API_URL en el archivo .env');
+  }
+
+  const response = await fetch(`${API_URL}?action=getAll`);
   if (!response.ok) {
     throw new Error(`Error al obtener datos: ${response.status}`);
   }
   const data = await response.json();
 
-  // Parsear fechas de vuelta a objetos Date
+  if (data.error) {
+    throw new Error(data.error);
+  }
+
   return data.map((a: Record<string, unknown>) => ({
     ...a,
     fechaCompromiso: new Date(a.fechaCompromiso as string),
-    estado: a.estado as Estado,
-    porcentajeAvance: Number(a.porcentajeAvance),
+    estado: (a.estado || 'Pendiente') as Estado,
+    porcentajeAvance: Number(a.porcentajeAvance) || 0,
   })) as Actividad[];
 }
 
 export async function saveActividadesAPI(actividades: Actividad[]): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/actividades`, {
+  if (!API_URL) return;
+
+  const response = await fetch(`${API_URL}?action=save`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(actividades),
   });
+
   if (!response.ok) {
     throw new Error(`Error al guardar: ${response.status}`);
   }
+}
+
+export async function addActividadAPI(actividad: Actividad): Promise<void> {
+  if (!API_URL) return;
+
+  await fetch(`${API_URL}?action=add`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(actividad),
+  });
+}
+
+export async function updateActividadAPI(actividad: Actividad): Promise<void> {
+  if (!API_URL) return;
+
+  await fetch(`${API_URL}?action=update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(actividad),
+  });
+}
+
+export async function deleteActividadAPI(id: string): Promise<void> {
+  if (!API_URL) return;
+
+  await fetch(`${API_URL}?action=delete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
 }

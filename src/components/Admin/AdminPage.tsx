@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Actividad } from '../../types';
-import { saveActividadesAPI } from '../../services/api';
+import { saveActividadesAPI, addActividadAPI, updateActividadAPI, deleteActividadAPI } from '../../services/api';
 import { PadrinoSelector } from './PadrinoSelector';
 import { ActividadForm } from './ActividadForm';
 import { ActividadesTable } from './ActividadesTable';
@@ -28,11 +28,12 @@ export function AdminPage({ actividades, onUpdate }: AdminPageProps) {
 
     if (editingActividad) {
       updated = actividades.map((a) => (a.id === actividad.id ? actividad : a));
+      updateActividadAPI(actividad);
     } else {
       updated = [...actividades, actividad];
+      addActividadAPI(actividad);
     }
 
-    saveActividadesAPI(updated);
     onUpdate(updated);
     setShowForm(false);
     setEditingActividad(undefined);
@@ -46,7 +47,7 @@ export function AdminPage({ actividades, onUpdate }: AdminPageProps) {
   const handleDelete = (id: string) => {
     if (!confirm('¿Estás seguro de eliminar esta actividad?')) return;
     const updated = actividades.filter((a) => a.id !== id);
-    saveActividadesAPI(updated);
+    deleteActividadAPI(id);
     onUpdate(updated);
   };
 
@@ -54,7 +55,8 @@ export function AdminPage({ actividades, onUpdate }: AdminPageProps) {
     const updated = actividades.map((a) =>
       a.id === id ? { ...a, estado: 'Completada' as const, porcentajeAvance: 100 } : a
     );
-    saveActividadesAPI(updated);
+    const act = updated.find(a => a.id === id);
+    if (act) updateActividadAPI(act);
     onUpdate(updated);
   };
 
@@ -62,7 +64,8 @@ export function AdminPage({ actividades, onUpdate }: AdminPageProps) {
     const updated = actividades.map((a) =>
       a.id === id ? { ...a, padrino: nuevoPadrino } : a
     );
-    saveActividadesAPI(updated);
+    const act = updated.find(a => a.id === id);
+    if (act) updateActividadAPI(act);
     onUpdate(updated);
   };
 
@@ -95,7 +98,8 @@ export function AdminPage({ actividades, onUpdate }: AdminPageProps) {
     if (!confirm(msg)) return;
 
     const updated = actividades.filter((a) => a.padrino !== selectedPadrino);
-    saveActividadesAPI(updated);
+    // Eliminar cada actividad del padrino
+    padrinoActividades.forEach(a => deleteActividadAPI(a.id));
     onUpdate(updated);
     setSelectedPadrino('');
   };
